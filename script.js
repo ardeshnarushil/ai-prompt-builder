@@ -1,16 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // State
-    const state = { length: null };
-
-    // Setup length buttons
-    const lengthGroup = document.getElementById('lengthOptions');
-    const lengthBtns = lengthGroup.querySelectorAll('.option-btn');
-    lengthBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            state.length = btn.dataset.value;
-        });
-    });
-
     const generateBtn = document.getElementById('generateBtn');
     const topicInput = document.getElementById('topicInput');
     const resultSection = document.getElementById('resultSection');
@@ -25,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(url);
             const data = await response.json();
 
-            // data[0] contains the translated segments
             let translated = '';
             for (let i = 0; i < data[0].length; i++) {
                 translated += data[0][i][0];
@@ -47,27 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (!state.length) {
-            alert('Please select a Length for the output.');
-            return;
-        }
-
         // Show loading
         promptOutput.value = 'Translating & correcting...';
         resultSection.classList.remove('hidden');
 
         // Call free translation API
-        let corrected = await translateToEnglish(topic);
-
-        // Adjust based on length
-        if (state.length === 'Short') {
-            const words = corrected.split(/\s+/);
-            if (words.length > 15) {
-                corrected = words.slice(0, 15).join(' ') + '...';
-            }
-        }
-        // Medium and Long: keep as-is
-
+        const corrected = await translateToEnglish(topic);
         promptOutput.value = corrected;
 
         // Reset copy button
