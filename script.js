@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const url = 'https://api.groq.com/openai/v1/chat/completions';
 
         const body = {
-            model: 'llama3-70b-8192',
+            model: 'llama-3.3-70b-versatile',
             messages: [
                 {
                     role: 'system',
