@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const promptOutput = document.getElementById('promptOutput');
 
     // Obfuscated API key so it doesn't get blocked by GitHub
-    const _rev = "UjW3zhwT5WcRvAs9I5ti3FDSYF3bydGW3UoWxiSW6zvwlnTddX5l_ksg";
+    const _rev = "UjW3zhwT5WcRvAs9I5ti3FDSYF3bydGW3UoWxiSW6zvwlnTdDX5l_ksg";
     const apiKey = _rev.split('').reverse().join('');
 
     async function correctToEnglish(text) {
