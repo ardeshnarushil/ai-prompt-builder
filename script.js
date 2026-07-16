@@ -5,43 +5,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const promptOutput = document.getElementById('promptOutput');
 
     // Load saved API key from localStorage
-    let apiKey = localStorage.getItem('gemini_api_key') || '';
+    let apiKey = localStorage.getItem('groq_api_key') || '';
 
     // If no key saved, ask once
     if (!apiKey) {
-        apiKey = prompt('Enter your Gemini API Key (get free from aistudio.google.com/apikey):');
+        apiKey = prompt('Enter your Groq API Key (starts with gsk_):');
         if (apiKey) {
-            localStorage.setItem('gemini_api_key', apiKey.trim());
+            localStorage.setItem('groq_api_key', apiKey.trim());
             apiKey = apiKey.trim();
         }
     }
 
     async function correctToEnglish(text) {
-        const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey;
+        const url = 'https://api.groq.com/openai/v1/chat/completions';
 
         const body = {
-            contents: [{
-                parts: [{
-                    text: 'You are an English correction tool. The user will give you text in any language (Gujarati, Hindi, broken English, or mixed). Your job is to understand the meaning and return ONLY the corrected proper English sentence. Do not add any explanation, do not add quotes, just return the corrected English text.\n\nUser text: ' + text
-                }]
-            }]
+            model: 'llama3-70b-8192',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You are an English correction tool. The user will give you text in any language (Gujarati, Hindi, broken English, or mixed). Your job is to understand the meaning and return ONLY the corrected proper English sentence. Do not add any explanation, do not add quotes, just return the corrected English text.'
+                },
+                {
+                    role: 'user',
+                    content: text
+                }
+            ],
+            temperature: 0.2
         };
 
         try {
             const response = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + apiKey
+                },
                 body: JSON.stringify(body)
             });
 
             const data = await response.json();
 
             if (data.error) {
-                console.error('Gemini API error:', data.error);
+                console.error('Groq API error:', data.error);
+                // Clear invalid key
+                if (data.error.message.includes('Invalid API Key') || response.status === 401) {
+                    localStorage.removeItem('groq_api_key');
+                    apiKey = '';
+                }
                 return 'Error: ' + data.error.message;
             }
 
-            const result = data.candidates[0].content.parts[0].text.trim();
+            const result = data.choices[0].message.content.trim();
             return result;
         } catch (err) {
             console.error('Request failed:', err);
@@ -52,9 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Generate button click
     generateBtn.addEventListener('click', async () => {
         if (!apiKey) {
-            apiKey = prompt('Enter your Gemini API Key:');
+            apiKey = prompt('Enter your Groq API Key (starts with gsk_):');
             if (apiKey) {
-                localStorage.setItem('gemini_api_key', apiKey.trim());
+                localStorage.setItem('groq_api_key', apiKey.trim());
                 apiKey = apiKey.trim();
             } else {
                 return;
@@ -75,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         promptOutput.value = 'Translating & correcting...';
         resultSection.classList.remove('hidden');
 
-        // Call Gemini API
+        // Call Groq API
         const corrected = await correctToEnglish(topic);
         promptOutput.value = corrected;
 
