@@ -11,11 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
-                // Remove selected class from all buttons in group
-                buttons.forEach(b => b.classList.remove('selected'));
-                // Add selected class to clicked button
-                btn.classList.add('selected');
-                // Update state
+                // Update state only, no visual highlight
                 state[stateKey] = btn.dataset.value;
             });
         });
@@ -44,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Construct the prompt
+        // Construct the prompt with exact required format
         let prompt = `Please correct the spellings and English grammar in the following text. Also, focus on improving clarity and flow.\n\nText: "${topic}"\n\n`;
 
         if (state.length === 'Short') {

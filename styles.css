@@ -2,8 +2,6 @@
     --bg-color: #212121;
     --text-color: #ececf1;
     --card-bg: #2f2f2f;
-    --primary-color: #10a37f;
-    --primary-hover: #1a7f64;
     --border-color: #4d4d4f;
     --input-bg: #40414f;
 }
@@ -41,7 +39,7 @@ h1 {
 }
 
 h1 span {
-    color: var(--primary-color);
+    color: #ececf1;
 }
 
 header p {
@@ -83,7 +81,7 @@ textarea#topicInput {
 }
 
 textarea#topicInput:focus {
-    border-color: var(--primary-color);
+    border-color: #ececf1;
 }
 
 .options-grid {
@@ -96,7 +94,7 @@ textarea#topicInput:focus {
     padding: 0.6rem 1.2rem;
     border-radius: 6px;
     border: 1px solid var(--border-color);
-    background: var(--card-bg);
+    background: transparent;
     color: var(--text-color);
     font-size: 0.95rem;
     cursor: pointer;
@@ -108,8 +106,8 @@ textarea#topicInput:focus {
 }
 
 .option-btn.selected {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
+    background: var(--input-bg);
+    border-color: #ececf1;
     color: white;
 }
 
@@ -117,18 +115,18 @@ textarea#topicInput:focus {
     width: 100%;
     padding: 1rem;
     border-radius: 8px;
-    border: none;
-    background: var(--primary-color);
-    color: white;
+    border: 1px solid var(--border-color);
+    background: #ececf1;
+    color: #212121;
     font-size: 1.1rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s;
     margin-top: 1rem;
 }
 
 .generate-btn:hover {
-    background: var(--primary-hover);
+    background: #ffffff;
 }
 
 .result-section {
@@ -166,8 +164,8 @@ textarea#topicInput:focus {
 }
 
 .copy-btn.copied {
-    color: var(--primary-color);
-    border-color: var(--primary-color);
+    color: #ececf1;
+    border-color: #ececf1;
 }
 
 textarea#promptOutput {
