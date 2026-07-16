@@ -4,45 +4,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultSection = document.getElementById('resultSection');
     const promptOutput = document.getElementById('promptOutput');
 
-    // Try translating with a specific source language
-    async function tryTranslate(text, sourceLang) {
-        const url = 'https://translate.googleapis.com/translate_a/single'
-            + '?client=gtx&sl=' + sourceLang + '&tl=en&dt=t&q=' + encodeURIComponent(text);
-        const response = await fetch(url);
-        const data = await response.json();
-        let translated = '';
-        for (let i = 0; i < data[0].length; i++) {
-            translated += data[0][i][0];
+    // Load saved API key from localStorage
+    let apiKey = localStorage.getItem('gemini_api_key') || '';
+
+    // If no key saved, ask once
+    if (!apiKey) {
+        apiKey = prompt('Enter your Gemini API Key (get free from aistudio.google.com/apikey):');
+        if (apiKey) {
+            localStorage.setItem('gemini_api_key', apiKey.trim());
+            apiKey = apiKey.trim();
         }
-        return translated.trim();
     }
 
-    // Smart translation: tries multiple languages if result looks unchanged
-    async function translateToEnglish(text) {
+    async function correctToEnglish(text) {
+        const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey;
+
+        const body = {
+            contents: [{
+                parts: [{
+                    text: 'You are an English correction tool. The user will give you text in any language (Gujarati, Hindi, broken English, or mixed). Your job is to understand the meaning and return ONLY the corrected proper English sentence. Do not add any explanation, do not add quotes, just return the corrected English text.\n\nUser text: ' + text
+                }]
+            }]
+        };
+
         try {
-            // 1. Try Gujarati first
-            let result = await tryTranslate(text, 'gu');
-            if (result.toLowerCase() !== text.toLowerCase()) {
-                return result;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                console.error('Gemini API error:', data.error);
+                return 'Error: ' + data.error.message;
             }
 
-            // 2. Try Hindi
-            result = await tryTranslate(text, 'hi');
-            if (result.toLowerCase() !== text.toLowerCase()) {
-                return result;
-            }
-
-            // 3. Try auto-detect as fallback
-            result = await tryTranslate(text, 'auto');
+            const result = data.candidates[0].content.parts[0].text.trim();
             return result;
         } catch (err) {
-            console.error('Translation error:', err);
-            return 'Error: Could not translate. Please try again.';
+            console.error('Request failed:', err);
+            return 'Error: Network request failed. Please try again.';
         }
     }
 
     // Generate button click
     generateBtn.addEventListener('click', async () => {
+        if (!apiKey) {
+            apiKey = prompt('Enter your Gemini API Key:');
+            if (apiKey) {
+                localStorage.setItem('gemini_api_key', apiKey.trim());
+                apiKey = apiKey.trim();
+            } else {
+                return;
+            }
+        }
+
         const topic = topicInput.value.trim();
 
         if (!topic) {
@@ -52,12 +70,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Show loading
+        generateBtn.disabled = true;
+        generateBtn.textContent = 'Processing...';
         promptOutput.value = 'Translating & correcting...';
         resultSection.classList.remove('hidden');
 
-        // Translate
-        const corrected = await translateToEnglish(topic);
+        // Call Gemini API
+        const corrected = await correctToEnglish(topic);
         promptOutput.value = corrected;
+
+        generateBtn.disabled = false;
+        generateBtn.textContent = 'Generate Perfect Prompt ✨';
 
         // Reset copy button
         const cb = document.getElementById('copyBtn');
