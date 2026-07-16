@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // State to hold current selections
     const state = {
-        role: null,
-        tone: null,
         length: null
     };
 
@@ -23,9 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Setup the three option groups
-    setupOptionGroup('roleOptions', 'role');
-    setupOptionGroup('toneOptions', 'tone');
+    // Setup the option group
     setupOptionGroup('lengthOptions', 'length');
 
     // Generate prompt logic
@@ -38,29 +34,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const topic = topicInput.value.trim();
 
         if (!topic) {
-            alert('Please enter a topic!');
+            alert('Please paste the text you want to correct!');
             topicInput.focus();
             return;
         }
 
-        if (!state.role || !state.tone || !state.length) {
-            alert('Please select a Role, Tone, and Length to craft the perfect prompt.');
+        if (!state.length) {
+            alert('Please select a Length for the output.');
             return;
         }
 
         // Construct the prompt
-        let prompt = `Act as an expert ${state.role}. `;
-        
-        prompt += `I need you to write about or create content for the following topic: "${topic}". `;
-        
-        prompt += `Please maintain a ${state.tone} tone throughout your response. `;
+        let prompt = `Please correct the spellings and English grammar in the following text. Also, focus on improving clarity and flow.\n\nText: "${topic}"\n\n`;
 
         if (state.length === 'Short') {
-            prompt += `Keep your response short, concise, and straight to the point (under 150 words).`;
+            prompt += `Keep the corrected version very short and concise. Remove any unnecessary words.`;
         } else if (state.length === 'Medium') {
-            prompt += `Provide a medium-length, well-structured response with moderate detail.`;
+            prompt += `Provide a medium-length corrected version, keeping the original meaning intact but making it read naturally.`;
         } else if (state.length === 'Long') {
-            prompt += `Provide a highly detailed, comprehensive, and long-form response covering all nuances of the topic.`;
+            prompt += `Provide a highly detailed and expressive corrected version. You can expand slightly to make it sound highly professional and articulate.`;
         }
 
         // Display the result
