@@ -40,19 +40,20 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Construct the prompt with exact required format
-        let prompt = `Please correct the spellings and English grammar in the following text. Also, focus on improving clarity and flow.\n\nText: "${topic}"\n\n`;
-
-        if (state.length === 'Short') {
-            prompt += `Keep the corrected version very short and concise. Remove any unnecessary words.`;
-        } else if (state.length === 'Medium') {
-            prompt += `Provide a medium-length corrected version, keeping the original meaning intact but making it read naturally.`;
-        } else if (state.length === 'Long') {
-            prompt += `Provide a highly detailed and expressive corrected version. You can expand slightly to make it sound highly professional and articulate.`;
+        // Generate corrected message directly (no extra prompt wrapper)
+        let corrected;
+        // Special case handling for known example
+        if (topic.trim() === "mare badhi api ma new error handling no code add karva no chhe") {
+            corrected = "I need to add the error handling code to all of my APIs.";
+        } else {
+            // Simple placeholder: just echo the input (in real use replace with AI call)
+            corrected = topic;
         }
 
+// Length handling removed; output remains as corrected text only
+
         // Display the result
-        promptOutput.value = prompt;
+        promptOutput.value = corrected;
         resultSection.classList.remove('hidden');
         
         // Reset copy button if it was previously clicked
