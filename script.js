@@ -4,20 +4,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultSection = document.getElementById('resultSection');
     const promptOutput = document.getElementById('promptOutput');
 
-    // Free translation function – no API key needed
+    // Try translating with a specific source language
+    async function tryTranslate(text, sourceLang) {
+        const url = 'https://translate.googleapis.com/translate_a/single'
+            + '?client=gtx&sl=' + sourceLang + '&tl=en&dt=t&q=' + encodeURIComponent(text);
+        const response = await fetch(url);
+        const data = await response.json();
+        let translated = '';
+        for (let i = 0; i < data[0].length; i++) {
+            translated += data[0][i][0];
+        }
+        return translated.trim();
+    }
+
+    // Smart translation: tries multiple languages if result looks unchanged
     async function translateToEnglish(text) {
         try {
-            const url = 'https://translate.googleapis.com/translate_a/single'
-                + '?client=gtx&sl=auto&tl=en&dt=t&q=' + encodeURIComponent(text);
-
-            const response = await fetch(url);
-            const data = await response.json();
-
-            let translated = '';
-            for (let i = 0; i < data[0].length; i++) {
-                translated += data[0][i][0];
+            // 1. Try Gujarati first
+            let result = await tryTranslate(text, 'gu');
+            if (result.toLowerCase() !== text.toLowerCase()) {
+                return result;
             }
-            return translated.trim();
+
+            // 2. Try Hindi
+            result = await tryTranslate(text, 'hi');
+            if (result.toLowerCase() !== text.toLowerCase()) {
+                return result;
+            }
+
+            // 3. Try auto-detect as fallback
+            result = await tryTranslate(text, 'auto');
+            return result;
         } catch (err) {
             console.error('Translation error:', err);
             return 'Error: Could not translate. Please try again.';
@@ -38,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         promptOutput.value = 'Translating & correcting...';
         resultSection.classList.remove('hidden');
 
-        // Call free translation API
+        // Translate
         const corrected = await translateToEnglish(topic);
         promptOutput.value = corrected;
 
