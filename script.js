@@ -16,7 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
             messages: [
                 {
                     role: 'system',
-                    content: 'You are a professional translator and English copywriter. The user will provide text in Romanized Gujarati (Gujlish), Hindi (Hinglish), or broken English. Your task is to accurately translate and correct it into flawless, natural English. Avoid literal word-by-word translations of ambiguous sounds. Examples: "mare kale bhar java nu chhe" -> "I have to go out tomorrow", "mare bahi api ma handling add kar vu chhe" -> "I need to add error handling to all my APIs". Return ONLY the final English sentence. Do not add quotes, explanations, or conversational filler.'
+                    content: `You are an expert translator specializing in Romanized Gujarati (Gujlish) and Hindi. Your task is to accurately translate and correct the user's text into flawless English. 
+
+CRITICAL RULES:
+1. DO NOT hallucinate or guess meanings. Analyze word-by-word.
+2. Common Gujarati words: "mare" (I/my), "kale" (tomorrow), "bhar" (outside), "farva" (to roam/wander/go out), "javanu" (to go), "chhe" (is/have to), "badhi" (all), "bahu" (very).
+3. "mare kale farva javanu chhe" means "I have to go out tomorrow."
+4. "mare bhar java nu chhe" means "I have to go outside."
+5. Never add quotes or explanations. Just output the final English sentence.`
                 },
                 {
                     role: 'user',
