@@ -66,7 +66,7 @@ CRITICAL RULES:
                     },
                     {
                         role: 'user',
-                        content: \`ORIGINAL TEXT: \${text}\\nROUGH TRANSLATION: \${roughEnglish}\`
+                        content: `ORIGINAL TEXT: ${text}\nROUGH TRANSLATION: ${roughEnglish}`
                     }
                 ],
                 temperature: 0.1
