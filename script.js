@@ -46,18 +46,26 @@ The user provides the ORIGINAL Gujlish text and a ROUGH translation.
 Your ONLY job is to output a flawless, 100% natural conversational English sentence. 
 
 CRITICAL RULES FOR NATURAL ENGLISH:
-1. NO AWKWARD LITERALS: Never use awkward phrasing like "go for a roam", "eat java", or "scared from". Use natural idioms (e.g., "hang out", "go out", "have dinner", "scared of").
-2. Subject-Object Fix: "A B thi bive che" = "A is scared of B" (NOT B is scared of A). Example: "shubham bhai tena wife thi bive che" -> "Shubham bhai is scared of his wife."
-3. Vocabulary mapping:
-   - "farva" -> "go out", "hang out", or "travel" (NEVER "roam" or "wander"). Example: "mare kale farva javu chhe" -> "I have to go out tomorrow."
-   - "jamva/khava" -> "have dinner", "eat", "grab food".
-   - "bive/beve/dar" -> "afraid of", "scared of".
-   - "khatarnak/khatar nakh" -> "dangerous", "very scary".
-4. Return ONLY the final polished English sentence. No quotes, no explanations.`
+                        content: `You are an elite linguistic expert in Romanized Gujarati (Gujlish). The user writes in terrible Gujlish with severe spelling mistakes. You must perfectly translate it to English.
+
+CRITICAL AUTOCORRECT & DICTIONARY:
+- Spelling fixes: kael -> kale (tomorrow), shubah -> shubham, khatar nakh -> khatarnak (dangerous/scary), bov/bau -> very.
+- NOTE: "khatar nakh" is NOT negative. It means "khatarnak" (dangerous/scary). Do NOT translate "nakh" as "not".
+- Subject-Object Relation (The "-thi" rule): "A B thi bive che" means "A is scared of B". Example: "shubham bhai tena wife thi bive che" -> "Shubham bhai is scared of his wife." (NOT wife is scared of him).
+- Verbs: jamva/khava (to eat/dinner), javanu/javu (to go), bive/beve/dar (scared/afraid), aav (come), malva (meet).
+- Pronouns: mare (I have to), tu (you), ena/tena (his/her).
+- Nouns: ghare/ghar (house), wife/patni (wife), bhai (brother).
+- Connectors: thi (from/of), ne (to), na/no/ni (of).
+
+CRITICAL RULES:
+1. NEVER reverse the subject and object. Use the "-thi" rule above.
+2. Translate EXACTLY what they mean. "mare kael shubha ne ghare khava java nu che shubah na wife bov khatar nakh chhe" -> "I have to go to Shubham's house to eat tomorrow, Shubham's wife is very dangerous."
+3. DO NOT SKIP VERBS (eating, sleeping, going, scared).
+4. Return ONLY the final flawless English sentence. No explanations.`
                     },
                     {
                         role: 'user',
-                        content: `ORIGINAL TEXT: ${text}\nROUGH TRANSLATION: ${roughEnglish}`
+                        content: text
                     }
                 ],
                 temperature: 0.1
@@ -73,56 +81,80 @@ CRITICAL RULES FOR NATURAL ENGLISH:
             });
 
             const data = await response.json();
-
-            if (data.error) {
-                console.error('Groq API error:', data.error);
-                return 'Error: ' + data.error.message;
-            }
-
-            const result = data.choices[0].message.content.trim();
-            return result;
+            if (data.error) return 'Error: ' + data.error.message;
+            
+            // Post processing for natural english
+            let res = data.choices[0].message.content.trim();
+            res = res.replace(/go for a roam/ig, 'go out');
+            res = res.replace(/eat java/ig, 'have dinner');
+            return res;
         } catch (err) {
-            console.error('Request failed:', err);
             return 'Error: Network request failed. Please try again.';
         }
     }
 
-    // Generate button click
     generateBtn.addEventListener('click', async () => {
-        const topic = topicInput.value.trim();
+        const text = topicInput.value.trim();
+        if (!text) return;
 
-        if (!topic) {
-            alert('Please paste the text you want to correct!');
-            topicInput.focus();
-            return;
-        }
-
-        // Show loading
+        topicInput.value = '';
+        topicInput.style.height = 'auto'; // Reset height
         generateBtn.disabled = true;
-        generateBtn.textContent = 'Processing...';
-        promptOutput.value = 'Translating & correcting...';
-        resultSection.classList.remove('hidden');
 
-        // Call Groq API
-        const corrected = await correctToEnglish(topic);
-        promptOutput.value = corrected;
+        // Display user message
+        appendMessage('user', text);
+        currentSession.push({ role: 'user', content: text });
+        
+        // Show loading state in a temporary AI bubble
+        const loadingId = 'loading-' + Date.now();
+        const loadingHtml = `<div class="message ai" id="${loadingId}">
+            <div class="avatar">AI</div>
+            <div class="content">Translating...</div>
+        </div>`;
+        messagesContainer.insertAdjacentHTML('beforeend', loadingHtml);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        // Call API
+        const corrected = await correctToEnglish(text);
+
+        // Remove loading bubble
+        document.getElementById(loadingId).remove();
+
+        // Display AI message
+        appendMessage('ai', corrected);
+        currentSession.push({ role: 'ai', content: corrected });
+
+        // Save to History
+        if (chatHistory.length === 0 || currentSession.length === 2) {
+            // New session
+            chatHistory.push({
+                title: text.substring(0, 30) + (text.length > 30 ? '...' : ''),
+                messages: currentSession
+            });
+        } else {
+            // Update current session
+            chatHistory[chatHistory.length - 1].messages = currentSession;
+        }
+        localStorage.setItem('ai_prompts_history', JSON.stringify(chatHistory));
+        renderHistorySidebar();
 
         generateBtn.disabled = false;
-        generateBtn.textContent = 'Generate Perfect Prompt ✨';
-
-        // Reset copy button
-        const cb = document.getElementById('copyBtn');
-        cb.textContent = 'Copy to Clipboard';
-        cb.classList.remove('copied');
     });
 
-    // Copy to clipboard
-    const copyBtn = document.getElementById('copyBtn');
-    copyBtn.addEventListener('click', () => {
-        promptOutput.select();
-        document.execCommand('copy');
-        copyBtn.textContent = 'Copied! ✓';
-        copyBtn.classList.add('copied');
-        window.getSelection().removeAllRanges();
+    // Handle Enter to submit (Shift+Enter for new line)
+    topicInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            generateBtn.click();
+        }
     });
+
+    // Auto-resize textarea
+    topicInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+
+    // Init
+    renderHistorySidebar();
 });
