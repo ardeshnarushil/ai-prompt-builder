@@ -35,34 +35,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 roughEnglish = text;
             }
 
-            // STEP 3: Polish Rough English to Flawless Professional English (Groq Llama-3)
             const groqUrl = 'https://api.groq.com/openai/v1/chat/completions';
             const body = {
                 model: 'llama-3.3-70b-versatile',
                 messages: [
                     {
                         role: 'system',
-                        content: `You are an elite linguistic expert in Romanized Gujarati (Gujlish). The user provides the ORIGINAL Gujlish text and a ROUGH translation. You must perfectly translate it to English.
+                        content: `You are an elite bilingual English copywriter and Gujarati/Hindi translator. 
+The user provides the ORIGINAL Gujlish text and a ROUGH translation. 
+Your ONLY job is to output a flawless, 100% natural conversational English sentence. 
 
-CRITICAL GUJARATI GRAMMAR RULES:
-1. Subject-Object Relation (The "-thi" rule): 
-   - "A B thi bive che" means "A is scared of B" (NOT B is scared of A). 
-   - Example: "shubham bhai tena wife thi bive che" -> "Shubham bhai is scared of his wife." (NOT wife is scared of him).
-2. Suffixes: "-thi" = from/of, "-ne" = to, "-na"/"-no"/"-ni" = of/belonging to, "-ma" = in/inside.
-3. Sentence Structure: Gujarati uses Subject-Object-Verb. You must reverse it to English Subject-Verb-Object.
-
-MASSIVE GUJARATI DICTIONARY:
-- Emotions/States: bive/beve/dar/dikh (scared/afraid), thak/thakyo (tired), bhukh (hungry), gusse (angry), rone/radvu (crying), hasvu (laughing/smiling), gamyu (liked), kantal (bored).
-- Actions (Verbs): jamva/khava (eat/dinner), piva (drink), suva (sleep), farva (roam/hangout), javanu/javu (to go), avvanu/avvu (to come), malva (to meet), besva (to sit), bolavya (called), karvu (to do), kehvu (to say), aapshe (will give).
-- People/Relationships: bhai (brother), ben/bahen (sister), bhabhi (sister-in-law), chokra (children/boys), chokri (girl), kaka (uncle), dost/bhaibandh (friend), wife/patni (wife), pati (husband).
-- Nouns: ghare/ghar (house), vat (talk), kam (work), paisa (money), gadi (car), rasto (road), time/samay (time), baju (side/next).
-- Time: kale (tomorrow/yesterday), aaje (today), pachi (later), hamna/atyare (now), savare (morning), sanje (evening), rate (night).
-- Qualities/Modifiers: badhi/badhu (all), bau/bahu (very/a lot), thodu (a little), nathi (no/not/isn't), chhe/chee (is/are), su (what), kem (why/how), kya (where), kyare (when).
-
-CRITICAL RULES:
-1. NEVER reverse the subject and object. Use the "-thi" rule above.
-2. NEVER skip verbs (eating, sleeping, going, scared).
-3. Return ONLY the final flawless English sentence. No explanations, no quotes.`
+CRITICAL RULES FOR NATURAL ENGLISH:
+1. NO AWKWARD LITERALS: Never use awkward phrasing like "go for a roam", "eat java", or "scared from". Use natural idioms (e.g., "hang out", "go out", "have dinner", "scared of").
+2. Subject-Object Fix: "A B thi bive che" = "A is scared of B" (NOT B is scared of A). Example: "shubham bhai tena wife thi bive che" -> "Shubham bhai is scared of his wife."
+3. Vocabulary mapping:
+   - "farva" -> "go out", "hang out", or "travel" (NEVER "roam" or "wander"). Example: "mare kale farva javu chhe" -> "I have to go out tomorrow."
+   - "jamva/khava" -> "have dinner", "eat", "grab food".
+   - "bive/beve/dar" -> "afraid of", "scared of".
+   - "khatarnak/khatar nakh" -> "dangerous", "very scary".
+4. Return ONLY the final polished English sentence. No quotes, no explanations.`
                     },
                     {
                         role: 'user',
