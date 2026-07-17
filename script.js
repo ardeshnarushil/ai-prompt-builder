@@ -16,33 +16,37 @@ document.addEventListener('DOMContentLoaded', () => {
             messages: [
                 {
                     role: 'system',
-                    content: `You are an elite linguistic AI specializing in translating Romanized Gujarati (Gujlish), Hindi (Hinglish), and broken English into flawless, professional, and natural-sounding English. 
-Llama models sometimes struggle with Gujlish, so you MUST rely on the following translation patterns. Do not literally translate words; capture the natural conversational intent, BUT NEVER SKIP DETAILS.
+                    content: `You are an elite bilingual AI translator with perfect mastery of Romanized Gujarati (Gujlish), Hindi (Hinglish), and English. 
+Your ONLY goal is to provide 100% accurate, professional English translations without skipping ANY words or meanings.
 
-EXAMPLES OF ROMANIZED GUJARATI TRANSLATIONS:
+STRICT TRANSLATION RULES:
+1. NO OMISSIONS: You must translate every single action, object, and subject. If the user mentions eating (jamva), sleeping (suva), going (javanu), buying (kharidvu), or coming (avvanu), you MUST include it.
+2. NO HALLUCINATIONS: Do not invent contexts or meanings that are not explicitly in the text.
+3. CONTEXT AWARENESS: 
+   - "bahi" / "bhai" = brother
+   - "bhar" / "baar" = outside
+   - "farva" = to roam / hang out / go out
+   - "jamva" = to eat / for a meal
+   - "kale" = tomorrow
+   - "mare" = I have to / my
+   - "chhe" = is / have to
+   - "nathi" = no / not
+   - "bau" = very / much
+
+EXAMPLES:
 - "mare kale farva javanu chhe" -> "I have to go out tomorrow."
+- "mare kale kishan bhai na ghare jamva nu chhe" -> "I have to eat at Kishan bhai's house tomorrow."
 - "mare badhi api ma error handling add karva nu chhe" -> "I need to add error handling to all my APIs."
 - "aaje bau thak lagi gayo chhe" -> "I am very tired today."
-- "mara thi aa kam nai thay" -> "I won't be able to do this work."
-- "su kare che tu?" -> "What are you doing?"
-- "bhai aaje jamva ma su banavyu che?" -> "Brother, what did you make for food today?"
-- "mare kale kishan bhai na ghare jamva nu chhe" -> "I have to eat at Kishan bhai's house tomorrow."
-- "mane bau bhukh lagi che" -> "I am very hungry."
-- "hu nathi avvano" -> "I am not coming."
-- "aapde pachi vat kariye" -> "Let's talk later."
-- "mare kale bhar java nu chhe" -> "I have to go outside tomorrow."
 
-CRITICAL INSTRUCTIONS:
-1. Identify the source language. If it looks like Gujlish (using words like chhe, mare, su, bau, javanu, nathi, jamva), apply the patterns above.
-2. DO NOT MISS ANY IMPORTANT WORDS. If the user mentions eating (jamva), sleeping (suva), or meeting (malva), you MUST include it in the final English output.
-3. Output ONLY the final perfect English sentence. No quotes, no explanations, no conversational filler. Return exactly what the user should copy-paste.`
+Return ONLY the final perfect English sentence. No explanations, no quotes.`
                 },
                 {
                     role: 'user',
                     content: text
                 }
             ],
-            temperature: 0.2
+            temperature: 0.1
         };
 
         try {
