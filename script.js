@@ -1,45 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const generateBtn = document.getElementById('generateBtn');
-    const topicInput = document.getElementById('topicInput');
-    const resultSection = document.getElementById('resultSection');
-    const promptOutput = document.getElementById('promptOutput');
-
-    // Obfuscated API key so it doesn't get blocked by GitHub
-    const _rev = "UjW3zhwT5WcRvAs9I5ti3FDSYF3bydGW3UoWxiSW6zvwlnTdDX5l_ksg";
-    const apiKey = _rev.split('').reverse().join('');
-
-    async function correctToEnglish(text) {
-        try {
-            // STEP 1: Convert Romanized Gujarati (Gujlish) to Gujarati Script (Unicode)
-            const inputToolsUrl = 'https://inputtools.google.com/request?text=' + encodeURIComponent(text) + '&itc=gu-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=test';
-            const itRes = await fetch(inputToolsUrl);
-            const itData = await itRes.json();
-            
-            let gujaratiScript = text;
-            if (itData[0] === 'SUCCESS' && itData[1] && itData[1][0] && itData[1][0][1]) {
-                gujaratiScript = itData[1][0][1][0]; // "મારે કાલે જમવા..."
-            }
-
-            // STEP 2: Translate Gujarati Script to Rough English (Google Translate)
-            const gtUrl = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=gu&tl=en&dt=t&q=' + encodeURIComponent(gujaratiScript);
-            const gtRes = await fetch(gtUrl);
-            const gtData = await gtRes.json();
-            
-            let roughEnglish = '';
-            for (let i = 0; i < gtData[0].length; i++) {
-                roughEnglish += gtData[0][i][0];
-            }
-            
-            // If Google Translate fails or returns empty, fallback to original text
-            if (!roughEnglish.trim()) {
-                roughEnglish = text;
-            }
-
-            const groqUrl = 'https://api.groq.com/openai/v1/chat/completions';
-            const body = {
-                model: 'llama-3.3-70b-versatile',
-                messages: [
-document.addEventListener('DOMContentLoaded', () => {
     const topicInput = document.getElementById('topicInput');
     const generateBtn = document.getElementById('generateBtn');
     const resultSection = document.getElementById('resultSection');

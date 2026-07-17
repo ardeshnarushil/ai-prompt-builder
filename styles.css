@@ -151,29 +151,27 @@ textarea#topicInput:focus {
     border-color: #10a37f;
 }
 
-/* Creative Generate Button */
+/* Simple Premium Button */
 .generate-btn {
     width: 100%;
     padding: 1rem;
     border-radius: 8px;
     border: none;
-    background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
-    background-size: 200% 200%;
-    color: white;
+    background: #ececf1;
+    color: #212121;
     font-size: 1.15rem;
     font-weight: 600;
     cursor: pointer;
     margin-top: 1rem;
     position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .generate-btn:hover {
-    background-position: right center;
-    box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
-    transform: translateY(-2px);
+    background: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 
 .generate-btn:disabled {
