@@ -17,15 +17,36 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderHistorySidebar() {
         historyList.innerHTML = '';
         chatHistory.slice().reverse().forEach((session, index) => {
+            const realIndex = chatHistory.length - 1 - index;
             const div = document.createElement('div');
             div.className = 'history-item';
-            div.textContent = session.title;
-            div.title = session.title;
+            
+            const titleSpan = document.createElement('span');
+            titleSpan.className = 'history-item-title';
+            titleSpan.textContent = session.title;
+            titleSpan.title = session.title;
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-item-btn';
+            deleteBtn.title = "Delete this prompt";
+            deleteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+            
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                chatHistory.splice(realIndex, 1);
+                localStorage.setItem('ai_prompts_history_v2', JSON.stringify(chatHistory));
+                renderHistorySidebar();
+                newChatBtn.click(); // Reset the UI so we don't show a deleted prompt
+            });
+
+            div.appendChild(titleSpan);
+            div.appendChild(deleteBtn);
+
             div.addEventListener('click', () => {
                 // Remove active class from all
                 document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
                 div.classList.add('active');
-                loadSession(chatHistory.length - 1 - index);
+                loadSession(realIndex);
             });
             historyList.appendChild(div);
         });
