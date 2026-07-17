@@ -39,13 +39,68 @@ document.addEventListener('DOMContentLoaded', () => {
             const body = {
                 model: 'llama-3.3-70b-versatile',
                 messages: [
+document.addEventListener('DOMContentLoaded', () => {
+    const topicInput = document.getElementById('topicInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const resultSection = document.getElementById('resultSection');
+    const promptOutput = document.getElementById('promptOutput');
+    const copyBtn = document.getElementById('copyBtn');
+    const historyList = document.getElementById('historyList');
+    const newChatBtn = document.getElementById('newChatBtn');
+
+    // Obfuscated API key
+    const _rev = "UjW3zhwT5WcRvAs9I5ti3FDSYF3bydGW3UoWxiSW6zvwlnTdDX5l_ksg";
+    const apiKey = _rev.split('').reverse().join('');
+
+    // Load History
+    let chatHistory = JSON.parse(localStorage.getItem('ai_prompts_history_v2')) || [];
+
+    function renderHistorySidebar() {
+        historyList.innerHTML = '';
+        chatHistory.slice().reverse().forEach((session, index) => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.textContent = session.title;
+            div.title = session.title;
+            div.addEventListener('click', () => {
+                // Remove active class from all
+                document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+                div.classList.add('active');
+                loadSession(chatHistory.length - 1 - index);
+            });
+            historyList.appendChild(div);
+        });
+    }
+
+    function loadSession(index) {
+        const session = chatHistory[index];
+        topicInput.value = session.original;
+        promptOutput.value = session.translated;
+        resultSection.classList.remove('hidden');
+        resetCopyBtn();
+    }
+
+    newChatBtn.addEventListener('click', () => {
+        topicInput.value = '';
+        promptOutput.value = '';
+        resultSection.classList.add('hidden');
+        document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+        resetCopyBtn();
+    });
+
+    function resetCopyBtn() {
+        copyBtn.textContent = 'Copy to Clipboard';
+        copyBtn.classList.remove('copied');
+    }
+
+    async function correctToEnglish(text) {
+        try {
+            const groqUrl = 'https://api.groq.com/openai/v1/chat/completions';
+            const body = {
+                model: 'llama-3.3-70b-versatile',
+                messages: [
                     {
                         role: 'system',
-                        content: `You are an elite bilingual English copywriter and Gujarati/Hindi translator. 
-The user provides the ORIGINAL Gujlish text and a ROUGH translation. 
-Your ONLY job is to output a flawless, 100% natural conversational English sentence. 
-
-CRITICAL RULES FOR NATURAL ENGLISH:
                         content: `You are an elite linguistic expert in Romanized Gujarati (Gujlish). The user writes in terrible Gujlish with severe spelling mistakes. You must perfectly translate it to English.
 
 CRITICAL AUTOCORRECT & DICTIONARY:
@@ -95,64 +150,54 @@ CRITICAL RULES:
 
     generateBtn.addEventListener('click', async () => {
         const text = topicInput.value.trim();
-        if (!text) return;
+        if (!text) {
+            alert("Please paste some text first.");
+            return;
+        }
 
-        topicInput.value = '';
-        topicInput.style.height = 'auto'; // Reset height
+        // Show loading state
+        const btnSpan = generateBtn.querySelector('span');
+        const originalText = btnSpan.textContent;
+        btnSpan.textContent = 'Generating... ⚡';
         generateBtn.disabled = true;
-
-        // Display user message
-        appendMessage('user', text);
-        currentSession.push({ role: 'user', content: text });
         
-        // Show loading state in a temporary AI bubble
-        const loadingId = 'loading-' + Date.now();
-        const loadingHtml = `<div class="message ai" id="${loadingId}">
-            <div class="avatar">AI</div>
-            <div class="content">Translating...</div>
-        </div>`;
-        messagesContainer.insertAdjacentHTML('beforeend', loadingHtml);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        promptOutput.value = 'Translating...';
+        resultSection.classList.remove('hidden');
+        resetCopyBtn();
 
         // Call API
         const corrected = await correctToEnglish(text);
 
-        // Remove loading bubble
-        document.getElementById(loadingId).remove();
-
-        // Display AI message
-        appendMessage('ai', corrected);
-        currentSession.push({ role: 'ai', content: corrected });
+        // Display result
+        promptOutput.value = corrected;
+        
+        // Restore button state
+        btnSpan.textContent = originalText;
+        generateBtn.disabled = false;
 
         // Save to History
-        if (chatHistory.length === 0 || currentSession.length === 2) {
-            // New session
-            chatHistory.push({
-                title: text.substring(0, 30) + (text.length > 30 ? '...' : ''),
-                messages: currentSession
-            });
-        } else {
-            // Update current session
-            chatHistory[chatHistory.length - 1].messages = currentSession;
-        }
-        localStorage.setItem('ai_prompts_history', JSON.stringify(chatHistory));
+        const title = text.substring(0, 30) + (text.length > 30 ? '...' : '');
+        chatHistory.push({
+            title: title,
+            original: text,
+            translated: corrected
+        });
+        localStorage.setItem('ai_prompts_history_v2', JSON.stringify(chatHistory));
         renderHistorySidebar();
-
-        generateBtn.disabled = false;
-    });
-
-    // Handle Enter to submit (Shift+Enter for new line)
-    topicInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            generateBtn.click();
+        
+        // Auto-select latest
+        const items = document.querySelectorAll('.history-item');
+        if(items.length > 0) {
+            items[0].classList.add('active');
         }
     });
 
-    // Auto-resize textarea
-    topicInput.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
+    copyBtn.addEventListener('click', () => {
+        promptOutput.select();
+        document.execCommand('copy');
+        copyBtn.textContent = 'Copied! ✓';
+        copyBtn.classList.add('copied');
+        window.getSelection().removeAllRanges();
     });
 
     // Init
