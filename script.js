@@ -42,11 +42,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 messages: [
                     {
                         role: 'system',
-                        content: `You are an elite English copywriter. The user will provide a rough, literal translation of a Gujarati/Hindi sentence. Your job is to rewrite it into flawless, natural, and highly professional conversational English. DO NOT change the meaning or skip any details. Fix any grammar errors. Return ONLY the final polished English sentence.`
+                        content: `You are an elite bilingual English copywriter and Gujarati/Hindi translator. The user will provide the ORIGINAL Romanized Gujarati text AND a ROUGH Google Translation.
+Your job is to read both, understand the exact intent, and output ONLY a flawless, highly professional English sentence.
+
+MASSIVE GUJARATI DICTIONARY FOR CONTEXT:
+- Pronouns: mare (I/my), hu (I), tu/tari (you/yours), amare (we/ours), pacha (again)
+- Actions/Verbs: jamva (eat/dinner), suva (sleep), farva (roam/wander/hangout), javanu (to go), avvanu (to come), malva (to meet), besva (to sit), bolavya (called), beve/bive (afraid/scared), thak (tired), bhukh (hungry)
+- Nouns: ghare/ghar (house/home), bhai (brother), ben/bahen (sister), bhabhi (sister-in-law), vat (talk/conversation), kam (work)
+- Time/Misc: kale (tomorrow/yesterday), aaje (today), badhi (all), bau/bahu (very/much), nathi (no/not), chhe/chee (is/are), su (what), kem (how)
+
+CRITICAL RULES:
+1. NEVER SKIP DETAILS. If they mention eating, sleeping, or being afraid (beve), you MUST include it.
+2. Fix any weird literal translations from the rough translation using the original text context.
+3. Return ONLY the final polished English sentence. No quotes, no conversational filler.`
                     },
                     {
                         role: 'user',
-                        content: roughEnglish
+                        content: `ORIGINAL TEXT: ${text}\nROUGH TRANSLATION: ${roughEnglish}`
                     }
                 ],
                 temperature: 0.1
