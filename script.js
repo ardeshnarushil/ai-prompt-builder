@@ -47,6 +47,18 @@ document.addEventListener('DOMContentLoaded', () => {
         resetCopyBtn();
     });
 
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    if (clearHistoryBtn) {
+        clearHistoryBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear your entire prompt history?')) {
+                chatHistory = [];
+                localStorage.removeItem('ai_prompts_history_v2');
+                renderHistorySidebar();
+                newChatBtn.click(); // Reset the UI
+            }
+        });
+    }
+
     function resetCopyBtn() {
         copyBtn.textContent = 'Copy to Clipboard';
         copyBtn.classList.remove('copied');

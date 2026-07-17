@@ -82,6 +82,26 @@ body {
     background: rgba(255, 255, 255, 0.1);
 }
 
+.clear-history-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem;
+    margin: 0.5rem;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.clear-history-btn:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
 /* Main Area - Centered Design */
 .main-area {
     flex: 1;
